@@ -5,20 +5,14 @@
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* server = "api.thingspeak.com";
-String apiKey ="J3E50TEQQPNHKTTW";
+String apiKey ="EDI6NC60AQ01RUG6";
 
-#define LEDPIN1 12
-#define LEDPIN2 14
 #define DHT_PIN 15 // Definindo pino de dados do sensor
 
 DHTesp dhtSensor; // Definindo o objeto do sensor
 
 void setup() {
-  Serial.begin(115200);
-
-  pinMode(LEDPIN1, OUTPUT);
-  pinMode(LEDPIN2, OUTPUT);
-  Serial.println("Pinos configurados para o ESP32!");
+  Serial.begin(9600);
 
   dhtSensor.setup(DHT_PIN, DHTesp::DHT22);
   Serial.println("Objeto Iniciado!");
@@ -47,5 +41,35 @@ void loop() {
   Serial.println("\nTemperatura: " + String(temperatura) + "°C");
   Serial.println("Umidade: " + String(umidade) + "%");
 
-  delay(5000); // this speeds up the simulation
+  if (isnan(umidade) || isnan(temperatura)) {
+    Serial.println("Falha ao ler os dados do sensor!");
+    return;
+  } else {
+    WiFiClient client;
+    if (client.connect(server, 80)) {
+      String postStr = "api_key=" + apiKey;
+      postStr += "&field1=";
+      postStr += String(temperatura);
+      postStr += "&field2=";
+      postStr += String(umidade);
+      postStr += "\r\n\r\n";
+      client.print("POST /update HTTP/1.1\n");
+      client.print("Host: api.thingspeak.com\n");
+      client.print("Connection: close\n");
+      client.print("Content-Type: application/x-www-form-urlencoded\n");
+      client.print("Content-Length: ");
+      client.print(postStr.length());
+      client.print("\n\n");
+      client.print(postStr);
+      Serial.print("Temperature: ");
+      Serial.print(temperatura);
+      Serial.print(" degrees Celcius, Humidity: ");
+      Serial.print(umidade);
+      Serial.println("%. Send to ThingSpeak.");
+      delay(500); // Delay para permitir que os dados sejam totalmente enviados antes de encerrar a conexão
+      client.stop();
+    } else {
+      Serial.println("Falha ao conectar ao ThingSpeak");
+    }
+  }
 }
