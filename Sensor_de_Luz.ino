@@ -22,15 +22,18 @@ void loop(){
   valorLDR = analogRead(LDR);
   
   if (valorLDR < minimo){ 
-    apagarLeds(); digitalWrite(ledVermelho, HIGH); 
+    apagarLeds(); 
+    digitalWrite(ledVermelho, HIGH); 
   }
 
   if (valorLDR >= minimo && valorLDR < maximo){ 
-    apagarLeds(); digitalWrite(ledAmarelo, HIGH);  
+    apagarLeds(); 
+    digitalWrite(ledAmarelo, HIGH);  
   }
   
   if (valorLDR >=maximo ){ 
-    apagarLeds(); digitalWrite(ledVerde, HIGH); 
+    apagarLeds(); 
+    digitalWrite(ledVerde, HIGH); 
   } 
   
   Serial.print(valorLDR);
