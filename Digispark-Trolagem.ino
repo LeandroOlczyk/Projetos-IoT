@@ -39,7 +39,7 @@ void loop() {
 
   DigiKeyboard.sendKeyStroke(KEY_F4, MOD_ALT_LEFT);
 
- DigiKeyboard.delay(500);
+  DigiKeyboard.delay(500);
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
 
   DigiKeyboard.delay(2000);
